@@ -54,7 +54,7 @@ def main ():
 
 ################################
 # lin: intersection + X*slope  #
-#exponential: A+B*exp(lambda*t)#
+#exponential: A+ B*exp(lambda*t)#
 ################################
 
             cont_lines=1
@@ -125,10 +125,10 @@ def main ():
                     
                 
                 if len(list_lines_file) == 1: # if only one line in the file --> only one state --> diagonal term for the matrix
-                        list=[]
-                        list.append(state)
-                        list.append(state)
-                        list_all_transitions.append(list)
+                        lista=[]
+                        lista.append(state)
+                        lista.append(state)
+                        list_all_transitions.append(lista)
                         tot_num_transitions+=1.0
                         
                
@@ -137,10 +137,10 @@ def main ():
                         old_state=state
                     else:
                         new_state=state
-                        list=[]
-                        list.append(old_state)
-                        list.append(new_state)
-                        list_all_transitions.append(list)
+                        lista=[]
+                        lista.append(old_state)
+                        lista.append(new_state)
+                        list_all_transitions.append(lista)
                         
                         old_state=state # i update for the next transition
                         tot_num_transitions+=1.0
