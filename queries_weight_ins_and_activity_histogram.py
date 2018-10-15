@@ -65,8 +65,6 @@ def main ():
 
 
     total_histogr_interevent_act=[0]*10000
-    cum_histogr_interevent_act=[0]*10000
-
     cont_interevent=0.  
 
     control=0
@@ -171,17 +169,11 @@ def main ():
             
 
 
-    for i in range(len(total_histogr_interevent_act)):
-        for j in range(len(total_histogr_interevent_act)):
-            if j>=i:               
-                cum_histogr_interevent_act[i]+=total_histogr_interevent_act[j]
-
-
     name="temporal_series/most_weigh_ins/histogram_interevent_activity.dat" 
     file = open(name,'wt')
     for i in range(len(total_histogr_interevent_act)):
         if total_histogr_interevent_act[i]!=0:
-            print >> file, i, total_histogr_interevent_act[i]/float(cont_interevent), cum_histogr_interevent_act[i]/float(cont_interevent)
+            print >> file, i, total_histogr_interevent_act[i]/float(cont_interevent)
     file.close()
 
 
@@ -190,7 +182,7 @@ def main ():
 
             
     exit()
-########################################################## 
+ 
 ########################################################
     sorted_list_of_dict=[]
     for i in range(top):    

@@ -27,7 +27,7 @@ def main ():
     max_coef_slope=5   # +- that %pwc in one day!!
 
 
-    tot_num_transitions=00   # across all users
+    tot_num_transitions=0   # across all users
     list_diff_states=[]
     list_all_transitions=[]
    
@@ -54,7 +54,7 @@ def main ():
 
 ################################
 # lin: intersection + X*slope  #
-#exponential: A+ B*exp(lambda*t)#
+#exponential: A+B*exp(lambda*t)#
 ################################
 
             cont_lines=1
@@ -125,10 +125,10 @@ def main ():
                     
                 
                 if len(list_lines_file) == 1: # if only one line in the file --> only one state --> diagonal term for the matrix
-                        lista=[]
-                        lista.append(state)
-                        lista.append(state)
-                        list_all_transitions.append(lista)
+                        list=[]
+                        list.append(state)
+                        list.append(state)
+                        list_all_transitions.append(list)
                         tot_num_transitions+=1.0
                         
                
@@ -137,10 +137,10 @@ def main ():
                         old_state=state
                     else:
                         new_state=state
-                        lista=[]
-                        lista.append(old_state)
-                        lista.append(new_state)
-                        list_all_transitions.append(lista)
+                        list=[]
+                        list.append(old_state)
+                        list.append(new_state)
+                        list_all_transitions.append(list)
                         
                         old_state=state # i update for the next transition
                         tot_num_transitions+=1.0

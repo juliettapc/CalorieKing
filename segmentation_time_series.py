@@ -24,7 +24,7 @@ from scipy import stats
 def main ():
 
 
-    significance_threshold=0.95
+    significance_threshold=0.95   # value to accept a cut (set to this in Luis's paper)
 
     for index_file in range(50):
         index_file+=1
@@ -68,6 +68,9 @@ def main ():
         num_lines=len(values_time_serie)
   
 
+
+
+# LOOP OVER THE SERIES, TO FIND THE OPTIMUM CUTTING POINT:
        
         t_max=0.0
         index_max_t=0
