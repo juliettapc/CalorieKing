@@ -29,7 +29,7 @@ import sys
 
 
 
-def main (name):
+def main (path_and_name):
 
 #name='5_points_network/data/friend_graph_all0.gml'
 #name=5_points_network_2010/data/new_networks/quarters/friends_graph_quarter2_comm.gml
@@ -39,14 +39,14 @@ def main (name):
    
     #dir=name.split('master')[0]
     #dir=name.split('method3_50_adh')[0]
-    dir=name.split('network_')[0]
+    dir=path_and_name.split('Network2')[0]
    # dir=name.split('friends')[0]
 
 
-    info_name=name.split('.gml')[0]   
+    info_name=path_and_name.split('.gml')[0]   
     #info_name=info_name.split('method3_50/interim/')[1]
     #info_name=info_name.split('network_all_users/')[1]
-    info_name=info_name.split('semester_quarter_window_networks/')[1]
+ #   info_name=info_name.split('semester_quarter_window_networks/')[1]
 
 
     #info_name=info_name.split('data/')[1]
@@ -54,7 +54,7 @@ def main (name):
     
    
 
-    H=nx.read_gml(name) # create the network from the original input file  
+    H=nx.read_gml(path_and_name) # create the network from the original input file  
 
 # al leer la red de un .gml, los nodos tiene atributos: label, activity, community,...
 
@@ -64,7 +64,7 @@ def main (name):
     coef_layer  = 1.5
 
 
-    name=name.split('.')
+    name=path_and_name.split('.')
     name=name[0]   #  remove the extension of the filename
 
     components=nx.connected_component_subgraphs(H)  
@@ -225,7 +225,7 @@ def main (name):
                 num_R6+=1
 
 # write zscore-Participation to a file
-    file1 = open(dir+info_name2+"_zscore_vs_ParticipationCoef_diff_layers"+str(coef_layer)+".dat",'wt')
+    file1 = open(dir+"_zscore_vs_ParticipationCoef_diff_layers"+str(coef_layer)+".dat",'wt')
 
     for i in list_nodes_GC:
         print >> file1, G.node[i]['Pi'],G.node[i]['zi']
@@ -263,7 +263,7 @@ def main (name):
 
 
 # write fraction of diff. roles  to a file
-    file5 = open(dir+info_name2+"fraction_diff_roles"+str(coef_layer)+".dat",'wt')   
+    file5 = open(dir+"fraction_diff_roles"+str(coef_layer)+".dat",'wt')   
     print >> file5, "R1s:",num_R1/len(G.nodes())
     print >> file5, "R2s:",num_R2/len(G.nodes())
     print >> file5, "R3s:",num_R3/len(G.nodes())
@@ -283,7 +283,7 @@ def main (name):
     list_roles=["R1","R2","R3","R4","R5","R6","R7"]   
 
 
-    file2 = open(dir+"list_of_communities_"+info_name2+"_by_role",'wt')
+    file2 = open(dir+"list_of_communities_"+"_by_role",'wt')
     for roles in list_roles:  # loop over roles
         for i in list_nodes_GC: # loop over nodes
             try:            
@@ -305,7 +305,7 @@ def main (name):
 # write zscore-Participation with info about communities to a file
     #file3 = open(dir+info_name2+"_zscore_vs_ParticipCoef_with_comm_info_diff_layers"+str(coef_layer1)+"_"+str(coef_layer2)+".dat",'wt')
 
-    file3 = open(dir+info_name2+"_zscore_vs_ParticipCoef_with_comm_info_diff_layers"+str(coef_layer)+".dat",'wt')
+    file3 = open(dir+"_zscore_vs_ParticipCoef_with_comm_info_diff_layers"+str(coef_layer)+".dat",'wt')
 
     for label in label_comm:
         for i in list_nodes_GC:
@@ -321,7 +321,7 @@ def main (name):
 
 # write zscore-Participation for the scatter plot, just separating into R6 or non-R6
 
-    file3 = open(dir+info_name2+"_zscore_vs_ParticipCoef_R6_nonR6.dat",'wt')
+    file3 = open(dir+"zscore_vs_ParticipCoef_R6_nonR6.dat",'wt')
 
 
     print "R6:",       
@@ -364,6 +364,7 @@ def main (name):
    # nx.write_gml(H,name+"_roles_diff_layers"+str(coef_layer1)+"_"+str(coef_layer2)+".gml")
 
     nx.write_gml(H,name+"_roles_diff_layers"+str(coef_layer)+".gml")
+    print "\nwritten network file:",name+"_roles_diff_layers"+str(coef_layer)+".gml"
 
 ##ojoooo! los atributos zi y Pi que le doy a los nodos en el subgrafo G (GC)
 # tb los tienen los correspondientes nodos en H (total)

@@ -28,7 +28,7 @@ def main ():
 
 
 
-    top=500
+    top=50
 
 
     
@@ -63,8 +63,7 @@ def main ():
         query2="select  * from weigh_in_history where (ck_id ='"+str(ck_id)+"')  order by on_day asc"
         result2 = db.query(query2)
        
-       
-
+     
         # result2 is a list of dict.: [{'id': 163978L, 'activity_flag': u'WI', 'weight': 144.0, 'on_day': datetime.datetime(2009, 11, 27, 0, 0), 'ck_id': u'bd84dbe2-dd6e-4125-b006-239442df2ff6'}, {'id': 163979L, 'activity_flag': u'WI', 'weight': 143.09999999999999, 'on_day': datetime.datetime(2009, 12, 15, 0, 0), 'ck_id': u'bd84dbe2-dd6e-4125-b006-239442df2ff6'}, ...,]
        
         r1['num_wi']=len(result2)  # i add another key-value to the dict. -->> with this i ALSO modify the list of dict. result!!!
@@ -74,7 +73,7 @@ def main ():
 
        
 
-    sorted_list_of_dict=[]
+    sorted_list_of_dict=[]   # i sort the time series from the longest (highest # w-ins) to shortest
     for i in range(top):    
 
         try:
@@ -98,7 +97,7 @@ def main ():
    
             cont=0   #number of users
         
-
+            print cont
 
             ck_id=r1['ck_id']
             id=r1['id']
@@ -107,6 +106,7 @@ def main ():
 
 
 
+            print ck_id
 
                
             num_user=num_user+1
@@ -142,7 +142,7 @@ def main ():
 
                
                 if (float(row['weight'])>10.0):  # to eliminate some error in the data
-                    print >> file, contador,row['weight'],float(row['weight'])*703.0/(float(r1['height'])*float(r1['height'])),(float(row['weight'])-initial_weight)*100.0/initial_weight,row['on_day']-first_day ,row['on_day']                       
+                    print >> file, contador,row['weight'],float(row['weight'])*703.0/(float(r1['height'])*float(r1['height'])),(float(row['weight'])-initial_weight)*100.0/initial_weight,row['on_day']-first_day ,row['on_day'] , ck_id                     
                     contador=contador+1
 
                 print >> file,"\n"    #to separate users                      
@@ -169,10 +169,10 @@ def main ():
                     first_day=row['on_day']
                 
 
-                interevent=row['on_day']-previous   # time between events
+                interevent=(row['on_day']-previous).days   # time between events
                 if (float(row['weight'])>10.0): # to eliminate some error data   
                    
-                    print >> file, contador2,row['weight'],(float(row['weight'])-initial_weight)*100.0/initial_weight,float(row['weight'])*703.0/(float(r1['height'])*float(r1['height'])),row['on_day']-first_day ,row['on_day'],interevent
+                    print >> file, contador2,row['weight'],(float(row['weight'])-initial_weight)*100.0/initial_weight,float(row['weight'])*703.0/(float(r1['height'])*float(r1['height'])),(row['on_day']-first_day).days ,row['on_day'],interevent, ck_id 
 
 
                     contador2=contador2+1

@@ -15,6 +15,7 @@ More info: It follows the method proposed by Fukuda, Stanley and Amaral PRL 69, 
 
 import sys
 import os
+from datetime import *
 import math
 import numpy
 from scipy import stats
@@ -22,7 +23,7 @@ from scipy import stats
 
 
 def main ():
-  
+
 
     significance_threshold=0.95
     min_lenght=30  # to cut the series

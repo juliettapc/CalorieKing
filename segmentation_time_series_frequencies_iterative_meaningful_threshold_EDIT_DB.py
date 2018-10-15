@@ -19,43 +19,92 @@ from datetime import *
 import math
 import numpy
 from scipy import stats
+from database import *   #package to handle databases
+
 
 
 
 def main ():
 
 
+
+    database = "calorie_king_social_networking_2010"  
+    server="tarraco.chem-eng.northwestern.edu"
+    user="calorieking" 
+    passwd="n1ckuDB!"
+    
+    db= Connection(server, database, user, passwd) 
+
+
+    db.execute ("DROP TABLE IF EXISTS frequency_cuts")  #i remove the old table 
+
+
+    #i create a new table in an existin DB  
+    db.execute ("""                      
+       CREATE TABLE frequency_cuts
+       (
+         file_index     INT,
+         ck_id          CHAR (200),            
+         start_day      INT,
+         end_day        INT,
+         mean_freq      FLOAT,        
+         std_freq       FLOAT,
+         tot_num_cuts   INT
+       
+        
+       )
+     """) # if i use triple quotation marks, i can have jumps of line no problem, but not with single ones 
+
+
+ 
+
+
     significance_threshold=0.95
-    min_lenght=10  # (# w-ins) to cut the series
+    min_lenght=10  # to cut the series (in terms of num of points)
 
-    top=50   #max: 8921  with filters  , all sorted from longest (in # w-ins) to shortest record 
+    top=8924      #max: 8924  with filters, 50 for the top50 longest series
 
-    list_all_average_frequencies=[]
-    histogram_all_freq_no_averaged=[0]*1000
+
+    freq_threshold=0.2   # meaningful threshold for   (freq1-freq2)/Average(freq1,freq2)
+
+
+    list_all_average_frequencies=[]   
     num_events_all_freq_no_averaged=0.
+
+
+
+    
+    file22=open("temporal_series/most_weigh_ins/number_segments_acording_to_frequencies.dat",'wt')
+  
+
 
   
     for index_file in range(top):
         index_file+=1
+       
 
-        list_average_frequencies_one_user=[]
-        histogram_idiv=[0]*1000
+        list_average_frequencies_one_user=[]      
         num_events_indiv=0.
+
+        file33=open("temporal_series/most_weigh_ins/average_frequencies_segments_"+str(index_file)+".dat",'wt')
+
+
 
 
 #input file:
-        file_name="temporal_series/most_weigh_ins/weigh_in_time_serie_days"+str(index_file)+"_top50"    
-        #file_name="temporal_series/most_weigh_ins/weigh_in_time_serie_days"+str(index_file)+"_filters"
+        #file_name="temporal_series/most_weigh_ins/weigh_in_time_serie_days"+str(index_file)+"_top50"    
+        file_name="temporal_series/most_weigh_ins/weigh_in_time_serie_days"+str(index_file)+"_filters"
                                                  
     
-    
+
+       
         file=open(file_name+".dat",'r')
         list_lines_file=file.readlines()
 
 
 
       
-        file2=open(file_name+"_frequencies_t_points_segments"+str(min_lenght)+".dat",'wt')
+        file2=open(file_name+"_frequencies_t_points_segments"+str(min_lenght)+"_threshold.dat",'wt')
 
 
 
@@ -70,37 +119,30 @@ def main ():
    
                 list=line.split(" ")
                 
-               
+                ck_id=list[8]
                 
                 vector=[]
                
-                try:                               
+               # try:                               
               
-                    vector.append(float(list[4]))  #day
-                    vector.append(float(list[9]))  #frequency
-                    vector.append(float(list[2]))  #%weight change
-
-                    list_values_for_average.append(float(list[9]))
-
-                    index=int(round(float(list[9])))         #for the histogram of frequencies (not averaged)
-                    histogram_all_freq_no_averaged[index]+=1
-                    num_events_all_freq_no_averaged+=1.
-
-                    histogram_idiv[index]+=1
-                    num_events_indiv+=1.
-
-                except IndexError:                       
-                    vector.append(float(list[4]))  #day
-                    vector.append(float(0.0)) #frequency                    
-                    vector.append(float(list[2]))  #%weight change
-
-                    list_values_for_average.append(0.0)
-               
+                vector.append(float(list[4]))  #day
+                vector.append(float(list[7]))  #frequency
+                vector.append(float(list[2]))  #%weight change
+                
+                list_values_for_average.append(float(list[7]))
+                
+                index=int(round(float(list[7])))         #for the histogram of frequencies (not averaged)               
+                num_events_all_freq_no_averaged+=1.
+                                
+                num_events_indiv+=1.
                     
+               
+                
 
                 vector.append(0.0)  # here it will go the value for t
                 list_vectors.append(vector)
             cont+=1
+        end=list_vectors[-1][0] #last day
 
         num_lines=len(list_vectors)
                 
@@ -183,20 +225,19 @@ def main ():
                 x=nu/(nu+t_max*t_max)
                 I=stats.mstats.betai(a,b,x)
                 
-                print eta, nu, a, b,x,I
+                #print eta, nu, a, b,x,I
                 try:
                     significance_t_max=math.pow((1.0-I),eta)     #Return x raised to the power y. 
                 except ValueError:
                     significance_t_max=0.  #in case I=1.0
         
         
-            
-       
+               # print "independently of the signif. and meaninfl",mu1, mu2, abs(mu1-mu2)/((mu1+mu2)/2.)
 
-                if significance_t_max>significance_threshold :
+                if significance_t_max>significance_threshold   and  (abs(mu1-mu2)/((mu1+mu2)/2.) >= freq_threshold  or len(list_cut_times) ==0) :  #so i allow the first cut always
                     if  len(segment1)>min_lenght  and len(segment2)>min_lenght:
                         
-                        print "file:",index_file,"max_t:", t_max, "at time:",list_evolution[index_max_t][0],"significance:",significance_t_max,"           I:",I,"eta:",eta,"nu:",nu,"x:",x,"a:",a,"N:",num_points
+                        #print "file:",index_file,"max_t:", t_max, "at time:",list_evolution[index_max_t][0],"significance:",significance_t_max,"     I:",I,"eta:",eta,"nu:",nu,"x:",x,"a:",a,"N:",num_points, "diff freq:",abs(mu1-mu2)/((mu1+mu2)/2.),mu1,mu2
                         
                         list_series.append(segment1)  # next i will analyze the two segments independently
                         list_series.append(segment2)
@@ -218,41 +259,95 @@ def main ():
                     
 
 
-       
-        
-        list_cut_times=sorted(list_cut_times)
-        print index_file,"number of cutting points",len(list_cut_times),"\n"
-        cut_inferior=0.0
 
+
+
+###########################################################
+# print out the cut time series to files and add info to DB:
+##########################################################
+       
+        start=0.
+        list_cut_times=sorted(list_cut_times)
+        #if len(list_cut_times)>0:
+        print "\n\nfile:",index_file,"number of cutting points:",len(list_cut_times),"namely:",list_cut_times
+           
+        cut_inferior=0.0
+        
         if len(list_cut_times)!=0:
             for cut in list_cut_times:
+               
         
+                list_freq_that_segment=[] #list of freq only of that segment
                 for vector in list_vectors:
                                
                     if vector[0]>= cut_inferior and vector[0]<= cut:                       
                         print >> file2, vector[0],vector[1],vector[2]
+                        list_freq_that_segment.append(vector[1])
+
+
+                print >> file2, "\n"   # to separate segments of the same time series
+                
+
+
+                print str(index_file),str(start),str(cut),str(numpy.mean(list_freq_that_segment)), str(numpy.std(list_freq_that_segment)) ,str(len(list_cut_times)),  len(list_freq_that_segment)
+                   
+                db.execute ("""
+                        INSERT INTO frequency_cuts (file_index, ck_id,  start_day, end_day, mean_freq, std_freq, tot_num_cuts)
+                        VALUES (%s, %s, %s,%s, %s, %s, %s)
+                """, str(index_file), str(ck_id),str(start),str(cut),str(numpy.mean(list_freq_that_segment)), str(numpy.std(list_freq_that_segment)) ,str(len(list_cut_times))  )
+                                      
 
 
 
-                print >> file2, "\n"
-              
 
-                if cut == list_cut_times[-1]:
+
+                if cut == list_cut_times[-1]:  #for the last segment   (also if there is just one cut)
+                    list_freq_that_segment=[]
                     for vector in list_vectors:
                         if vector[0]> cut:                        
                             print >> file2, vector[0],vector[1],vector[2]
-                            
+                            list_freq_that_segment.append(vector[1])
+                   
+               
+                   #i write the freq. segments info into the DB
 
+                    print str(index_file),str(cut),str(list_vectors[-1][0]),str(numpy.mean(list_freq_that_segment)), str(numpy.std(list_freq_that_segment)) ,str(len(list_cut_times)),  len(list_freq_that_segment)
+                   
+                    db.execute ("""
+                        INSERT INTO frequency_cuts (file_index, ck_id,  start_day, end_day, mean_freq, std_freq, tot_num_cuts)
+                        VALUES (%s, %s, %s,%s, %s, %s, %s)
+                """, str(index_file), str(ck_id),str(cut),str(list_vectors[-1][0]),str(numpy.mean(list_freq_that_segment)), str(numpy.std(list_freq_that_segment)) ,str(len(list_cut_times))  )
+
+
+                 
                 print >> file2, "\n"
                 
                 cut_inferior=cut
+           
+                start=cut
 
 
         else:      # if only one frequency for the whole serie
+            list_freq_that_segment=[] 
+           
             for vector in list_vectors:            
                 print >> file2, vector[0],vector[1],vector[2]
+                list_freq_that_segment.append(vector[1])
 
-            
+
+
+            print str(index_file), str(list_vectors[0][0]),str(list_vectors[-1][0]),str(numpy.mean(list_freq_that_segment)), str(numpy.std(list_freq_that_segment)) ,str(len(list_cut_times)),  len(list_freq_that_segment)
+
+            db.execute ("""
+                        INSERT INTO frequency_cuts (file_index, ck_id,  start_day, end_day, mean_freq, std_freq, tot_num_cuts)
+                        VALUES (%s, %s, %s,%s, %s, %s, %s)
+                """, str(index_file), str(ck_id),str(list_vectors[0][0]),str(list_vectors[-1][0]),str(numpy.mean(list_freq_that_segment)), str(numpy.std(list_freq_that_segment)) ,str(len(list_cut_times))  )
+
+
+
+
+
+
            #i calculate the average frequency of the whole serie           
             mu=round(numpy.mean(list_values_for_average))
             if mu not in list_average_frequencies_one_user:
@@ -269,47 +364,29 @@ def main ():
         for item in list_average_frequencies_one_user:
             list_all_average_frequencies.append(int(item))
 
-        #print list_average_frequencies_one_user
+       
  
 
-        file_name_hist="temporal_series/most_weigh_ins/histogram_frequencies_indiv_top50_"+str(index_file)+".dat"        
-        file5=open(file_name_hist,'wt')
-        for i in range(len(histogram_idiv)):
-            if  histogram_idiv[i]!=0:
-                print >> file5, i , histogram_idiv[i]/num_events_indiv, histogram_idiv[i]
-        file5.close()
-    
-
-    print list_all_average_frequencies
-
-    histogram=[0]*100
-    num_events=0.
-    for item in list_all_average_frequencies:
-        histogram[item]+=1
-        num_events+=1
+       
 
 
 
-        
-    file_name_hist="temporal_series/most_weigh_ins/histogram_frequencies_top50_"+str(top)+".dat"        
-    file3=open(file_name_hist,'wt')
-    for i in range(len(histogram)):
-        if histogram[i]!=0:
-            print >> file3, i, float(histogram[i])/num_events
-            print i, float(histogram[i])/num_events
+       # i create a file with the number of segments for every time serie (i need that info so i can plot them automatically)
 
-    file3.close()
+        print >> file22,index_file,len(list_cut_times)+1
+
+        for i in list_average_frequencies_one_user:
+            print >> file33, i
 
 
 
+    file22.close()
+    file33.close()
 
 
-    file_name_hist="temporal_series/most_weigh_ins/histogram_frequencies_not_averaged50.dat"        
-    file4=open(file_name_hist,'wt')
-    for i in range(len(histogram_all_freq_no_averaged)):
-        if  histogram_all_freq_no_averaged[i]!=0:
-            print >> file4, i , histogram_all_freq_no_averaged[i]/num_events_all_freq_no_averaged, histogram_all_freq_no_averaged[i]
-    file4.close()
+ #   print list_all_average_frequencies
+
+  
 
 
 #########################

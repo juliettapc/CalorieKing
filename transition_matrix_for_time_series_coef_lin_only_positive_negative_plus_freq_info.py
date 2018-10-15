@@ -27,7 +27,7 @@ def main ():
     max_coef_slope=5   # +- that %pwc in one day!!
 
 
-    tot_num_transitions=00   # across all users
+    tot_num_transitions=0   # across all users
     list_diff_states=[]
     list_all_transitions=[]
    

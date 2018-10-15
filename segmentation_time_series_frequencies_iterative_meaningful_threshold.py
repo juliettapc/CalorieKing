@@ -2,7 +2,7 @@
 #! /usr/bin/env python
 
 """
-Created by Julia Poncela in October 2011
+Created by Julia Poncela of October 2011
 
 Given a file for a non-stationary time serie, it calculates the optimum points to cut it, that mark different trends.
 
@@ -25,10 +25,15 @@ from scipy import stats
 def main ():
 
 
+
+
+
+
+
     significance_threshold=0.95
     min_lenght=10  # to cut the series (in terms of num of points)
 
-    top= 8921  #max: 8921  with filters
+    top= 8924  #max: 8924  with filters
 
 
     freq_threshold=0.2   # meaningful threshold for   (freq1-freq2)/Average(freq1,freq2)
@@ -87,19 +92,19 @@ def main ():
    
                 list=line.split(" ")
                 
-               
+                ck_id=list[8]
                 
                 vector=[]
                
                 try:                               
               
                     vector.append(float(list[4]))  #day
-                    vector.append(float(list[9]))  #frequency
+                    vector.append(float(list[7]))  #frequency
                     vector.append(float(list[2]))  #%weight change
 
-                    list_values_for_average.append(float(list[9]))
+                    list_values_for_average.append(float(list[7]))
 
-                    index=int(round(float(list[9])))         #for the histogram of frequencies (not averaged)
+                    index=int(round(float(list[7])))         #for the histogram of frequencies (not averaged)
                     histogram_all_freq_no_averaged[index]+=1
                     num_events_all_freq_no_averaged+=1.
 
@@ -251,7 +256,7 @@ def main ():
 
 
 
-                print >> file2, "\n"
+                print >> file2, "\n"   # to separate segments of the same time series
               
 
                 if cut == list_cut_times[-1]:
@@ -263,6 +268,9 @@ def main ():
                 print >> file2, "\n"
                 
                 cut_inferior=cut
+
+
+
 
 
         else:      # if only one frequency for the whole serie

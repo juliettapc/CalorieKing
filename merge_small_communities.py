@@ -41,7 +41,7 @@ def main (graph_name):
     #dir=graph_name.split('friends')[0]
     #dir=graph_name.split('master')[0]
     #dir=graph_name.split('method3_')[0]
-    dir=graph_name.split('network_')[0]
+    dir=graph_name.split('Network')[0]
 
 
 
@@ -245,7 +245,7 @@ def main (graph_name):
 
 
 
-
+    print "new network with merged communities annotated:",name+"_merged_small_comm.gml"
 
 
 #################################

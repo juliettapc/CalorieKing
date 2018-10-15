@@ -53,7 +53,7 @@ def main ():
 
 
 
-    
+      
 
     num_user=0
     for r1 in result1:   #loop over users to get their number_of_weigh-ins
@@ -109,11 +109,13 @@ def main ():
                     first_day=row['on_day']
                 
 
-                interevent=row['on_day']-previous   # time between events
+                interevent=(row['on_day']-previous).days   # time between events
                 if (float(row['weight'])>10.0): # to eliminate some error data   
                    
-                    print >> file, contador2,row['weight'],(float(row['weight'])-initial_weight)*100.0/initial_weight,float(row['weight'])*703.0/(float(r1['height'])*float(r1['height'])),row['on_day']-first_day ,row['on_day'],interevent
+                    print >> file,contador2,row['weight'],(float(row['weight'])-initial_weight)*100.0/initial_weight,float(row['weight'])*703.0/(float(r1['height'])*float(r1['height'])),(row['on_day']-first_day).days ,row['on_day'],interevent,ck_id 
 
+                   # print contador2,row['weight'],(float(row['weight'])-initial_weight)*100.0/initial_weight,float(row['weight'])*703.0/(float(r1['height'])*float(r1['height'])),(row['on_day']-first_day).days ,row['on_day'],interevent,ck_id
+                    #raw_input()
 
                     contador2=contador2+1                   
                     previous=row['on_day']       
