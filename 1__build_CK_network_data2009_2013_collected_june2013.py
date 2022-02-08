@@ -26,7 +26,7 @@ def main():
     database = "CK_users2009_2012_collected_june2013"  
     server="tarraco.chem-eng.northwestern.edu"
     user="julia" 
-    passwd="tiyp,julia"
+    passwd="-----------"
     db= Connection(server, database, user, passwd) 
 
 ## G = nx.read_gml(graph_name)
